@@ -99,8 +99,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
     Inputs:     void
     Outputs:    void
     *******************************************************************/
-    private void resizeTableColumns()
-    {
+    private void resizeTableColumns() {
         // Columns: Date, Location, Competition, Platform, Team, Points
         // (total numeric values must = 1)
         double[] columnWidthPercentage = {0.2f, 0.2f, 0.3f, 0.2f, 0.1f};
@@ -108,8 +107,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
         TableColumn column;
         TableColumnModel tableColumnModel = compResults_JTable.getColumnModel();
         int cantCols = tableColumnModel.getColumnCount();
-        for (int i = 0; i < cantCols; i++) 
-        {
+        for (int i = 0; i < cantCols; i++) {
             column = tableColumnModel.getColumn(i);
             float pWidth = Math.round(columnWidthPercentage[i] * tableWidth);
             column.setPreferredWidth((int)pWidth);
@@ -134,12 +132,9 @@ public class GCESports_GUI extends javax.swing.JFrame {
                    
                    Competition comp = new Competition(game, location, date, team, points);
                    competitionList.add(comp); 
-               }
-               
-          //     System.out.println(line);
-          reader.close();
-            }
-           
+               }   
+           }
+           reader.close();
         }
         catch (FileNotFoundException fnfe) {
            System.out.println("ERROR: 'competitions.csv' file not found!"); 
@@ -170,9 +165,8 @@ public class GCESports_GUI extends javax.swing.JFrame {
                    Team team = new Team(teamName, contactPerson, contactPhone, contactEmail);
                    teamList.add(team);
                }         
-               reader.close();
-           //    System.out.println(line);
-            }  
+           }  
+           reader.close();
         }
         catch (FileNotFoundException fnfe) {
            System.out.println("ERROR: 'teams.csv' file not found!"); 
@@ -191,16 +185,13 @@ public class GCESports_GUI extends javax.swing.JFrame {
     Inputs:     void
     Outputs:    void
     *******************************************************************/
-    private void displayCompetitions()
-    {
+    private void displayCompetitions() {
         // populate competition data into JTable
-        if (competitionList.size() > 0)
-        {
+        if (competitionList.size() > 0) {
             // create Object[] 2D array for JTable
             Object[][] competitions2DArray = new Object[competitionList.size()][];
             // populate 2D array from competitions ArrayList
-            for (int i = 0; i < competitionList.size(); i++)
-            {
+            for (int i = 0; i < competitionList.size(); i++) {
                 // create Object[] for single row of data containing 6 components
                 Object[] competition = new Object[5];
                 // game
@@ -218,24 +209,20 @@ public class GCESports_GUI extends javax.swing.JFrame {
             }
 
             // first, remove all existing rows if there are any
-            if (compResultsTableModel.getRowCount() > 0)
-            {
-                for (int i = compResultsTableModel.getRowCount() - 1; i > -1; i--) 
-                {
+            if (compResultsTableModel.getRowCount() > 0) {
+                for (int i = compResultsTableModel.getRowCount() - 1; i > -1; i--) {
                     compResultsTableModel.removeRow(i);
                 }
             }
 
             // next, put new set of row data
-            if (competitions2DArray.length > 0)
-            {
+            if (competitions2DArray.length > 0) {
                 // add data to tableModel
-                for (int row = 0; row < competitions2DArray.length; row++)
-                {
+                for (int row = 0; row < competitions2DArray.length; row++) {
                     compResultsTableModel.addRow(competitions2DArray[row]);
                 }
-                // update
-                compResultsTableModel.fireTableDataChanged();
+            // update
+            compResultsTableModel.fireTableDataChanged();
             }	
         }
     }
@@ -253,8 +240,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
         
         if(updateTeam_JComboBox.getItemCount() > 0) {
             updateTeam_JComboBox.removeAllItems();
-        }
-        
+        }     
         
         if(teamList.size() > 0) {
             for(int i = 0; i < teamList.size(); i++) {
@@ -280,8 +266,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
             if (itemIndexSelected < 0) {
                 itemIndexSelected = 0;
             }
-        }
-        
+        }       
         
         // figuring out how to fill in the other textfields with individual bits of information!
         uContactPerson_JTextField.setText(teamList.get(itemIndexSelected).getContactPerson());
@@ -694,20 +679,17 @@ public class GCESports_GUI extends javax.swing.JFrame {
     private void addNewTeam_JButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addNewTeam_JButtonActionPerformed
         // TODO add your handling code here:
         
-        // Assign the form values to variables
-        // Pass the newly created variables into the validateNewTeam method for validation.
-        // Check for whether the validateNewTeam method returns true of false with a condition.
-        // If true > Present the user with a dialog box that prompts them to either Save or Cancel.
-        // If Yes > Add the new team, call the dislayTeams method to add the new team to the dropdown located on 'existing team' page
+        // get form fields
         String addTeam = teamName_JTextField.getText();
         String addPerson = contactPerson_JTextField.getText();
         String addPhone = contactPh_JTextField.getText();
         String addEmail = contactEm_JTextField.getText();
     
-    // validate
+        // validate
         Boolean valid = validateNewTeam(addTeam, addPerson, addPhone, addEmail);
         if(valid) {
            
+            // showDialog
             int yesOrNo = JOptionPane.showConfirmDialog(null, "You are about to enter a new team: " + addTeam, "Save Changes?", JOptionPane.YES_NO_OPTION);
             
             if(yesOrNo == JOptionPane.YES_OPTION) {
@@ -718,11 +700,19 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_addNewTeam_JButtonActionPerformed
 
-    // Check the values in the form fields under the 'add new team' section. If any of them are empty
-    // they are displayed in an error message, as as dialog box. It wil only display the fields that
-    // need correcting. If there are NO errors, then it returns a true value - allowin the next step
-    // of the process to add a new team.
-    
+    /*******************************************************************
+    Method:     validateNewTeam()
+    Purpose:    capture the form field values and validate them. If they are correct
+                add them into the teamList
+                team selected from the comboBox
+    Inputs:     
+     * @param team
+     * @param person
+     * @param phone
+     * @param email
+     * @return 
+    Outputs:    Boolean
+    *******************************************************************/
     public Boolean validateNewTeam(String team, String person, String phone, String email) {
 
         Boolean isValid = true;
@@ -755,8 +745,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
         // Display errors (if any)
         if (isValid == false) {
             JOptionPane.showMessageDialog(null, errorMsg, "Errors", JOptionPane.ERROR_MESSAGE);
-        }
-        
+        }       
         return isValid;
     }
     
@@ -764,10 +753,17 @@ public class GCESports_GUI extends javax.swing.JFrame {
     /*******************************************************************
     Method:     validateNewCompetition()
     Purpose:    Check the data entered into the form controls for a new competition result.
-    *           Multiple checks for the points. (is it blank / is it a number / is it within range)
+                Multiple checks for the points. (is it blank / is it a number / is it within range)
                 team selected from the comboBox
-    Inputs:     void
-    Outputs:    void
+    Inputs:     
+     * @param compGame
+     * @param compLocation
+     * @param compDate
+     * @param compTeam
+     * @param compPoints
+     * @return 
+    Outputs:    Boolean
+
     *******************************************************************/
     public Boolean validateNewCompetition(String compGame, String compLocation, String compDate, String compTeam, String compPoints) {
 
@@ -820,12 +816,9 @@ public class GCESports_GUI extends javax.swing.JFrame {
         // Display errors (if any)
         if (isValid == false) {
             JOptionPane.showMessageDialog(null, errorMsg, "Errors", JOptionPane.ERROR_MESSAGE);
-        }
-        
+        }       
         return isValid;
     }
-    
-    
     
     /*******************************************************************
     Method:     saveTeamData()
@@ -874,8 +867,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
         if(yesOrNo == JOptionPane.YES_OPTION) {
             saveCompetitionData();
             saveTeamData();
-        }
-        
+        }      
         // exit
     }//GEN-LAST:event_formWindowClosing
 
@@ -897,10 +889,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
                 competitionList.add(competition);    
                 displayCompetitions(); 
             }       
-        }
-        
-        
-        
+        }      
     }//GEN-LAST:event_addresult_JButtonActionPerformed
 
     private void topTeams_JButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_topTeams_JButtonActionPerformed
