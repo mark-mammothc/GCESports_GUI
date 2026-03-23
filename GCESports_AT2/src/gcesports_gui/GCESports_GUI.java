@@ -42,10 +42,14 @@
 package gcesports_gui;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -131,8 +135,9 @@ public class GCESports_GUI extends javax.swing.JFrame {
                    Competition comp = new Competition(game, location, date, team, points);
                    competitionList.add(comp); 
                }
-               reader.close();
+               
           //     System.out.println(line);
+          reader.close();
             }
            
         }
@@ -235,7 +240,12 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }
     }
     
-    
+    /*******************************************************************
+    Method:     displayTeams()
+    Purpose:    display ArrayList teams in the comboBox located in "update existing team" tab
+    Inputs:     void
+    Outputs:    void
+    *******************************************************************/
     private void displayTeams() {
         if(selectTeam_JComboBox.getItemCount() > 0) {
             selectTeam_JComboBox.removeAllItems();
@@ -249,12 +259,19 @@ public class GCESports_GUI extends javax.swing.JFrame {
         if(teamList.size() > 0) {
             for(int i = 0; i < teamList.size(); i++) {
                 selectTeam_JComboBox.addItem(teamList.get(i).getTeamName());
-                updateTeam_JComboBox.addItem(teamList.get(i).getTeamName());  
+                updateTeam_JComboBox.addItem(teamList.get(i).getTeamName()); 
+                //IO.println(teamList.get(i).getTeamName());
             }
         }
     }
     
-    
+    /*******************************************************************
+    Method:     displayTeamDetails()
+    Purpose:    display the associated team information in the form fields related to the 
+                team selected from the comboBox
+    Inputs:     void
+    Outputs:    void
+    *******************************************************************/
     private void displayTeamDetails() {
         
         int itemIndexSelected = 0;
@@ -331,6 +348,11 @@ public class GCESports_GUI extends javax.swing.JFrame {
         setBackground(new java.awt.Color(255, 255, 255));
         setPreferredSize(new java.awt.Dimension(800, 800));
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         header_JPanel.setBackground(new java.awt.Color(255, 255, 255));
         header_JPanel.setForeground(new java.awt.Color(255, 255, 255));
@@ -366,6 +388,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
         jScrollPane1.setViewportView(compResults_JTable);
 
         topTeams_JButton.setText("Display Top Teams");
+        topTeams_JButton.addActionListener(this::topTeams_JButtonActionPerformed);
 
         resultHeading_JLabel.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         resultHeading_JLabel.setText("Team Competition Results");
@@ -405,6 +428,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
         selectTeam_JComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         addresult_JButton.setText("Add New Competition Result");
+        addresult_JButton.addActionListener(this::addresult_JButtonActionPerformed);
 
         addDate_JLabel.setText("Date");
 
@@ -498,6 +522,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
         addHeading_JLabel.setText("Add New Team");
 
         addNewTeam_JButton.setText("Add New Team");
+        addNewTeam_JButton.addActionListener(this::addNewTeam_JButtonActionPerformed);
 
         javax.swing.GroupLayout addTeam_JPanelLayout = new javax.swing.GroupLayout(addTeam_JPanel);
         addTeam_JPanel.setLayout(addTeam_JPanelLayout);
@@ -653,9 +678,236 @@ public class GCESports_GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+     
     private void updateTeam_JComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_updateTeam_JComboBoxItemStateChanged
         displayTeamDetails();
     }//GEN-LAST:event_updateTeam_JComboBoxItemStateChanged
+
+    /*******************************************************************
+    Method:     addNewTeam_JButtonActionPerformed()
+    Purpose:    capture the form field values and validate them. If they are correct
+                add them into the teamList
+                team selected from the comboBox
+    Inputs:     void
+    Outputs:    void
+    *******************************************************************/
+    private void addNewTeam_JButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addNewTeam_JButtonActionPerformed
+        // TODO add your handling code here:
+        
+        // Assign the form values to variables
+        // Pass the newly created variables into the validateNewTeam method for validation.
+        // Check for whether the validateNewTeam method returns true of false with a condition.
+        // If true > Present the user with a dialog box that prompts them to either Save or Cancel.
+        // If Yes > Add the new team, call the dislayTeams method to add the new team to the dropdown located on 'existing team' page
+        String addTeam = teamName_JTextField.getText();
+        String addPerson = contactPerson_JTextField.getText();
+        String addPhone = contactPh_JTextField.getText();
+        String addEmail = contactEm_JTextField.getText();
+    
+    // validate
+        Boolean valid = validateNewTeam(addTeam, addPerson, addPhone, addEmail);
+        if(valid) {
+           
+            int yesOrNo = JOptionPane.showConfirmDialog(null, "You are about to enter a new team: " + addTeam, "Save Changes?", JOptionPane.YES_NO_OPTION);
+            
+            if(yesOrNo == JOptionPane.YES_OPTION) {
+                Team team = new Team(addTeam, addPerson, addPhone, addEmail);
+                teamList.add(team);    
+                displayTeams(); 
+            }       
+        }
+    }//GEN-LAST:event_addNewTeam_JButtonActionPerformed
+
+    // Check the values in the form fields under the 'add new team' section. If any of them are empty
+    // they are displayed in an error message, as as dialog box. It wil only display the fields that
+    // need correcting. If there are NO errors, then it returns a true value - allowin the next step
+    // of the process to add a new team.
+    
+    public Boolean validateNewTeam(String team, String person, String phone, String email) {
+
+        Boolean isValid = true;
+        String errorMsg = "Error(s) were detected: \n";
+        
+        // validate Team
+        if(team.isEmpty()) {
+            errorMsg += "Team Name is not valid. Cannot be blank. \n";
+            isValid = false;
+        }
+        
+        // validate Contact Person
+        if(person.isEmpty()) {
+            errorMsg += "Contact Person is not valid. Cannot be blank. \n";
+            isValid = false;
+        }
+
+        // validate Contact Phone
+        if(phone.isEmpty()) {
+            errorMsg += "Contact Phone is not valid. Cannot be blank. \n";
+            isValid = false;
+        }        
+        
+        // validate Contact Email
+        if(email.isEmpty()) {
+            errorMsg += "Email address is not valid. Cannot be blank. \n";
+            isValid = false;
+        }
+
+        // Display errors (if any)
+        if (isValid == false) {
+            JOptionPane.showMessageDialog(null, errorMsg, "Errors", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        return isValid;
+    }
+    
+    
+    /*******************************************************************
+    Method:     validateNewCompetition()
+    Purpose:    Check the data entered into the form controls for a new competition result.
+    *           Multiple checks for the points. (is it blank / is it a number / is it within range)
+                team selected from the comboBox
+    Inputs:     void
+    Outputs:    void
+    *******************************************************************/
+    public Boolean validateNewCompetition(String compGame, String compLocation, String compDate, String compTeam, String compPoints) {
+
+        Boolean isValid = true;
+        String errorMsg = "Error(s) were detected: \n";
+        
+        // validate Team
+        if(compTeam.isEmpty()) {
+            errorMsg += "Team Name is not valid. Cannot be blank. \n";
+            isValid = false;
+        }
+        
+        // validate Contact Person
+        if(compGame.isEmpty()) {
+            errorMsg += "Game is not valid. Cannot be blank. \n";
+            isValid = false;
+        }
+
+        // validate Contact Phone
+        if(compLocation.isEmpty()) {
+            errorMsg += "Location is not valid. Cannot be blank. \n";
+            isValid = false;
+        }        
+        
+        // validate Contact Email
+        if(compDate.isEmpty()) {
+            errorMsg += "Date is not valid. Cannot be blank. \n";
+            isValid = false;
+        }
+
+        if(compPoints.isEmpty()) {
+            errorMsg += "Points is not valid. Cannot be blank. \n";
+            isValid = false;
+        }
+        else {
+            try {
+                int points = Integer.parseInt(compPoints);
+                if(points < 0 || points > 2) {
+                   errorMsg += "Points is not valid. Must be between 0 and 2";
+                   isValid = false;
+                }
+            }
+            catch(Exception e) {
+                errorMsg += "Points is not valid. Needs to be a number";
+                isValid = false;
+            }
+        }     
+
+
+        // Display errors (if any)
+        if (isValid == false) {
+            JOptionPane.showMessageDialog(null, errorMsg, "Errors", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        return isValid;
+    }
+    
+    
+    
+    /*******************************************************************
+    Method:     saveTeamData()
+    Purpose:    Save the data in the teamList to the "teams.csv" file.
+                team selected from the comboBox
+    Inputs:     void
+    Outputs:    void
+    *******************************************************************/
+    private void saveTeamData() {
+        
+        // try with resources
+        try(BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("teams.csv"), "UTF-8"))) {
+           for (int i = 0; i < teamList.size(); i++) {
+               bufferedWriter.write(teamList.get(i).toString());
+               bufferedWriter.newLine();
+           }
+        }
+        catch (IOException ioe) {
+            JOptionPane.showMessageDialog(null, ioe.getMessage(), "Save Team Data - File Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    
+    private void saveCompetitionData() {
+        // save data out to external 'competitions.csv' 
+
+        // try with resources
+        try(BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("competitions.csv"), "UTF-8"))) {
+           for (int i = 0; i < competitionList.size(); i++) {
+               bufferedWriter.write(competitionList.get(i).toString());
+               bufferedWriter.newLine();
+           }
+        }
+        catch (IOException ioe) {
+            JOptionPane.showMessageDialog(null, ioe.getMessage(), "Save Competition Data - File Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        // write to file here
+        // yes or no variable for user to select save / not save
+        int yesOrNo = JOptionPane.showConfirmDialog(null, "Do you wish to save changes before cosing?", "Save Changes?", JOptionPane.YES_NO_OPTION);
+        
+        if(yesOrNo == JOptionPane.YES_OPTION) {
+            saveCompetitionData();
+            saveTeamData();
+        }
+        
+        // exit
+    }//GEN-LAST:event_formWindowClosing
+
+    
+    private void addresult_JButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addresult_JButtonActionPerformed
+        // TODO add your handling code here:
+        String compGame = addGame_JTextField.getText();
+        String compLocation = addLocation_JTextField.getText();
+        String compDate = addDate_JTextField.getText();
+        String compTeam = selectTeam_JComboBox.getSelectedItem().toString();
+        String compPoints = addPoints_JTextField.getText();
+        
+        Boolean valid = validateNewCompetition(compGame, compLocation, compDate, compTeam, compPoints);
+        if(valid == true) {
+            int yesOrNo = JOptionPane.showConfirmDialog(null, "You are about to enter a new team result for: " + compTeam, "Save Changes?", JOptionPane.YES_NO_OPTION);
+
+            if(yesOrNo == JOptionPane.YES_OPTION) {
+                Competition competition = new Competition(compGame, compLocation, compDate, compTeam, Integer.parseInt(compPoints));
+                competitionList.add(competition);    
+                displayCompetitions(); 
+            }       
+        }
+        
+        
+        
+    }//GEN-LAST:event_addresult_JButtonActionPerformed
+
+    private void topTeams_JButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_topTeams_JButtonActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(null, "here be a message about top teams", "Teams Leaderboard", JOptionPane.INFORMATION_MESSAGE);
+        
+    }//GEN-LAST:event_topTeams_JButtonActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

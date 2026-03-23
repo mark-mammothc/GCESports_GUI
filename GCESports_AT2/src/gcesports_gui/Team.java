@@ -7,6 +7,14 @@ public class Team {
     private String contactPhone;
     private String contactEmail;
     
+    // For Technical Report
+    public Team() {
+        this.teamName = "Generic_Name";
+        this.contactPerson = "Generic_Person";
+        this.contactPhone = "Generic_Phone";
+        this.contactEmail = "Generic_Email";   
+    }
+    
     public Team(String teamName, String contactPerson, String contactPhone, String contactEmail) {
         this.teamName = teamName;
         this.contactPerson = contactPerson;
@@ -47,18 +55,17 @@ public class Team {
     public void setContactEmail(String contactEmail) {
         this.contactEmail = contactEmail;
     }
-    
+  
     
     // OVERRIDE
    @Override
    public String toString() {
-       String teamInfo = "Team Name: " + teamName + "\n";
-              teamInfo += "Contact Person: " + contactPerson + "\n";
-              teamInfo += "Contact Phone: " + contactPhone + "\n";
-              teamInfo += "Contact Email: " + contactEmail;
+       String teamInfo = teamName + ",";
+              teamInfo += contactPerson + ",";
+              teamInfo += contactPhone + ",";
+              teamInfo += contactEmail;
               
         return teamInfo;
    }
-    
     
 }
