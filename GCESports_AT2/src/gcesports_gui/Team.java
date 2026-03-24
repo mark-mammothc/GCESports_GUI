@@ -1,18 +1,16 @@
 package gcesports_gui;
 
-public class Team {
+public class Team implements Comparable<Team> {
     
     private String teamName;
     private String contactPerson;
     private String contactPhone;
     private String contactEmail;
+    private int totalPoints;
     
-    // For Technical Report
-    public Team() {
-        this.teamName = "Generic_Name";
-        this.contactPerson = "Generic_Person";
-        this.contactPhone = "Generic_Phone";
-        this.contactEmail = "Generic_Email";   
+    public Team(String teamName, int totalPoints) {
+        this.teamName = teamName;
+        this.totalPoints = totalPoints;
     }
     
     public Team(String teamName, String contactPerson, String contactPhone, String contactEmail) {
@@ -24,21 +22,25 @@ public class Team {
     
     // ACCESSORS
     public String getTeamName() {
-        return this.teamName;
+        return teamName;
     }
     
     public String getContactPerson() {
-        return this.contactPerson;
+        return contactPerson;
     }
     
     public String getContactPhone() {
-        return this.contactPhone;
+        return contactPhone;
     }
     
     public String getContactEmail() {
-        return this.contactEmail;
+        return contactEmail;
     }
     
+    public int getTotalPoints() { 
+        return totalPoints; 
+    }
+
     // MUTATORS
     public void setTeamName(String teamName) {
         this.teamName = teamName;
@@ -67,5 +69,10 @@ public class Team {
               
         return teamInfo;
    }
-    
+   
+   @Override
+    public int compareTo(Team other) {
+        // Compare the other team's score to this one for Descending order
+        return Integer.compare(other.totalPoints, this.totalPoints);
+    }
 }

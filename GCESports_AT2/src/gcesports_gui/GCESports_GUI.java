@@ -41,6 +41,7 @@
 */
 package gcesports_gui;
 
+import java.util.List;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -49,6 +50,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -60,7 +65,8 @@ public class GCESports_GUI extends javax.swing.JFrame {
     
     private ArrayList<Competition> competitionList;
     private ArrayList<Team> teamList;
-    private String[] topTeams;
+    private Map<String, Integer> tally = new HashMap<>();
+    private List<Team> leaderboard = new ArrayList<>();
     
     private boolean comboBoxStatus = false;
     
@@ -114,12 +120,15 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }
     }
     
+    // put the points map method here somewhere in this below method.
     private void readCompetitionData() {
         
         try {
            FileReader reader = new FileReader("competitions.csv");
            BufferedReader bufferedReader = new BufferedReader(reader);
            String line;
+           
+           
            
            while((line = bufferedReader.readLine()) != null) {
                if(line.length() > 0) {
@@ -131,10 +140,32 @@ public class GCESports_GUI extends javax.swing.JFrame {
                    int points = Integer.parseInt(lineArray[4]);
                    
                    Competition comp = new Competition(game, location, date, team, points);
-                   competitionList.add(comp); 
+                   competitionList.add(comp);
+                   
+                           if (tally.containsKey(team)) {
+                                int currentScore = tally.get(team);
+                                tally.put(team, currentScore + points);
+                            } else {
+                                tally.put(team, points);
+                            }
+                 
                }   
            }
            reader.close();
+//           System.out.println(finalScores);
+
+        
+        
+        for (Map.Entry<String, Integer> entry : tally.entrySet()) {
+            // We turn each Map entry into a "Team" object
+            Team t = new Team(entry.getKey(), entry.getValue());
+            leaderboard.add(t);
+        }
+
+        // STEP 3: Use the Collections toolbox to sort the list
+        // It looks at your "compareTo" rule inside the Team class automatically!
+        Collections.sort(leaderboard);
+
         }
         catch (FileNotFoundException fnfe) {
            System.out.println("ERROR: 'competitions.csv' file not found!"); 
@@ -750,21 +781,16 @@ public class GCESports_GUI extends javax.swing.JFrame {
     }
     
     
-    /*******************************************************************
-    Method:     validateNewCompetition()
-    Purpose:    Check the data entered into the form controls for a new competition result.
-                Multiple checks for the points. (is it blank / is it a number / is it within range)
-                team selected from the comboBox
-    Inputs:     
-     * @param compGame
-     * @param compLocation
-     * @param compDate
-     * @param compTeam
-     * @param compPoints
-     * @return 
-    Outputs:    Boolean
-
-    *******************************************************************/
+    /**
+     *  Check the data entered into the form controls for a new competition result is valid.
+     *     
+     * @param compGame      Name of the game played.
+     * @param compLocation  Location game was played.
+     * @param compDate      Date game was played.
+     * @param compTeam      The team playing.
+     * @param compPoints    How many points were won.
+     * @return true if all form fields are valid, false if any field is left blank or points not a number.
+     */
     public Boolean validateNewCompetition(String compGame, String compLocation, String compDate, String compTeam, String compPoints) {
 
         Boolean isValid = true;
@@ -894,10 +920,30 @@ public class GCESports_GUI extends javax.swing.JFrame {
 
     private void topTeams_JButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_topTeams_JButtonActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(null, "here be a message about top teams", "Teams Leaderboard", JOptionPane.INFORMATION_MESSAGE);
-        
+        String msg = displayTopTeams(leaderboard);
+        JOptionPane.showMessageDialog(null, msg, "Teams Leaderboard", JOptionPane.INFORMATION_MESSAGE);   
     }//GEN-LAST:event_topTeams_JButtonActionPerformed
 
+    
+    /**
+    * Takes a list and outputs the top 5 teams in a multi line string
+    * to be used inside the Teams Leaderboard dialog modal window.
+    *
+    * @param leaderboard    contains a list of Team objects.
+    * @return string concatenated with the top 5 teams.
+    */
+    private String displayTopTeams(List<Team> leaderboard) {
+        
+        String topTeams = "Team | Points\n";
+   //     int rank = 1;    
+        for(int count = 0; count < 5; count++) {
+            Team t = leaderboard.get(count);
+           // System.out.println(t.getTeamName() + "\t\t" + t.getTotalPoints());
+           topTeams += t.getTeamName() + " | " + t.getTotalPoints() + "\n";
+        }
+        return topTeams;
+    }
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
