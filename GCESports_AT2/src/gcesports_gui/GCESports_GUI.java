@@ -50,7 +50,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JOptionPane;
@@ -613,6 +612,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
         uContactEm_JLabel.setText("Contact Email");
 
         updateTeam_JButton.setText("Update Existing Team");
+        updateTeam_JButton.addActionListener(this::updateTeam_JButtonActionPerformed);
 
         uTeamHeading_JLabel.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         uTeamHeading_JLabel.setText("Update Existing Team");
@@ -958,9 +958,50 @@ public class GCESports_GUI extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, msg, "Top Teams Leaderboard", JOptionPane.INFORMATION_MESSAGE);   
     }//GEN-LAST:event_topTeams_JButtonActionPerformed
 
+    /**
+     * Update existing team information.
+     * use selectedIndex of dropdown item to reference the correct team in the teamList.
+     * 
+     * @param evt the event that occurred
+     * @return
+     */
+    private void updateTeam_JButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateTeam_JButtonActionPerformed
+        // TODO add your handling code here:
+        
+        // get a reference to the selected teams index
+        int updateIndex = updateTeam_JComboBox.getSelectedIndex();
+        
+        // get the filled in form fields
+        String updateTeam = updateTeam_JComboBox.getSelectedItem().toString();
+        String updatePerson = uContactPerson_JTextField.getText();
+        String updatePhone = uContactPh_JTextField.getText();
+        String updateEmail = uContactEm_JTextField.getText();
+       
+        // validate
+        Boolean valid = validateNewTeam(updateTeam, updatePerson, updatePhone, updateEmail);
+        if (valid) {
+           
+            // showDialog
+            int yesOrNo = JOptionPane.showConfirmDialog(null, "You are about to update a new team: " + updateTeam, "Save Changes?", JOptionPane.YES_NO_OPTION);
+            
+            if (yesOrNo == JOptionPane.YES_OPTION) { 
+                
+                // update with new form field values using the previously grabbed index
+                // Do this here so the fields are only updated if the user confirms they want to save.
+                teamList.get(updateIndex).setContactPerson(updatePerson);
+                teamList.get(updateIndex).setContactPhone(updatePhone);
+                teamList.get(updateIndex).setContactEmail(updateEmail);               
+            }       
+        }
+        // refresh the existing teams. If there are errors on validation having this here means
+        // the fields will be repopulated with the original values rather than just being left blank
+        
+        displayTeamDetails();       
+    }//GEN-LAST:event_updateTeam_JButtonActionPerformed
+
     
     /**
-    * Takes a list and outputs the top 5 teams in a multi line string
+    * Takes a list of class objects and outputs the top 5 teams in a multi line string
     * to be used inside the Teams Leaderboard dialog modal window.
     *
     * @param leaderboard    contains a list of Team objects.
@@ -982,6 +1023,61 @@ public class GCESports_GUI extends javax.swing.JFrame {
         return topTeams;
     }
     
+    // Hans leaderboard for reference / sorting
+    
+    private void altLeaderBoard() {
+        if (competitionList.size() > 0 && teamList.size() > 0) {
+            String leaderBoardStr = "TEAMS LEADER BOARD\n\nPoints   Team\n";
+            ArrayList<String>teams_ArrayList = new ArrayList<String>();
+            ArrayList<Integer>points_ArrayList = new ArrayList<Integer>();
+            
+            for (int i = 0; i < teamList.size(); i++) {
+                //get team name
+                String teamName = teamList.get(i).getTeamName();
+                // declare totalPoints and set to zero
+                int totalPoints = 0;
+                //loop through the competitionList to total points for each team
+                for (int j = 0; j < competitionList.size(); j++) {
+                    if (teamName.equals(competitionList.get(j).getCompetitionTeam())) {
+                        totalPoints += competitionList.get(j).getCompetitionPoints();
+                    }
+                }
+                // add teamName string to teams_ArrayList
+                teams_ArrayList.add(teamName);
+                // add totalPoints integer to points_ArrayList
+                points_ArrayList.add(totalPoints);
+                // System.out.println(teamList.get(i).getTeamName() + "Total Points " + totalPoints);
+                // leaderBoardStr += totalPoints + " " + teamList.get(i).getCompetitionTeam() + "\n";
+            }
+            // store total points
+            // sort teams and points in point descending order
+            // order the lists by the total points accumulate (descending order
+            // using a selection sort algorithm ( with 2 for loops )
+            for (int i = 0; i < points_ArrayList.size() - 1; i++) {
+                for (int j = i + 1; j < points_ArrayList.size(); j++) {
+                    if(points_ArrayList.get(j) > points_ArrayList.get(i)) {
+                        // swap integers (total points)
+                        int tempInt = points_ArrayList.get(j);
+                        points_ArrayList.set(j, points_ArrayList.get(i));
+                        points_ArrayList.set(i, tempInt);
+                        // swap strings (team names)
+                        String tempStr = teams_ArrayList.get(j);
+                        teams_ArrayList.set(j, teams_ArrayList.get(i));
+                        teams_ArrayList.set(i, tempStr);
+                    }
+                }
+            }
+            for (int i = 0; i < points_ArrayList.size(); i++) {
+                leaderBoardStr += points_ArrayList.get(i) + "    " + teams_ArrayList.get(i) + "\n";
+            }
+            // display each team with points in JOptionPane window
+            JOptionPane.showMessageDialog(null, leaderBoardStr, "TEAMS LEADER BOARD", JOptionPane.INFORMATION_MESSAGE);         
+        }
+    }
+    
+    // end Hans sorting
+    
+   
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
