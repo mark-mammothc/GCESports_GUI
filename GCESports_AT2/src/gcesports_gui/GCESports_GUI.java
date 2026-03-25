@@ -1,43 +1,42 @@
 /*
     File name:  GCESports_GUI.java
     Purpose:    Runs the GUI JFrame app
-    Author:     <Your name>
-    Date:       <Date>
+    Author:     Mark W
+    Date:       25-03-2026
     Version:    1.0
-    NOTES:      
+    NOTES:      AT2 Development of a functional application that lists / updates competitions and teams.
     
     Required functionalities:
-    1.  APPLICATION IS LAUNCHED
-    1.1 Read-in competition results from competitions.csv external file and set up in ArrayList<Competition> competitions
-    1.2 Read-in team names and details from teams.csv external file and set up in ArrayList<Team> teams
-    1.3 Display read-in competition results in JTable
-    1.4 Display read-in team names in 2 x JComboBoxes
-    1.5 Display team info for first team name in Update panel
+    1.  APPLICATION IS LAUNCHED - Done.
+    1.1 Read-in competition results from competitions.csv external file and set up in ArrayList<Competition> competitions - Done.
+    1.2 Read-in team names and details from teams.csv external file and set up in ArrayList<Team> teams - Done.
+    1.3 Display read-in competition results in JTable - Done.
+    1.4 Display read-in team names in 2 x JComboBoxes - Done.
+    1.5 Display team info for first team name in Update panel - Done.
 
     2.  ADD A NEW COMPETITION RESULT
     2.1 Add a new (validated) competition result to ArrayList<Competition> competitions
-        and display in JTable
+        and display in JTable - Done.
 
     3.  ADD A NEW TEAM
     3.1 Add a new (validated) team to ArrayList<Team> teams
-        and add to the 2 x JComboBoxes
+        and add to the 2 x JComboBoxes - Done.
 
     4.  UPDATE AN EXISTING TEAM
-    4.1 Update details for a selected (existing) team
+    4.1 Update details for a selected (existing) team - Done.
         Validate changes to person, phone, email and player names
-        and change values in ArrayList<Team> for the specific team
+        and change values in ArrayList<Team> for the specific team - Done.
 
     5.  DISPLAY TOP TEAMS WITH LEADERBOARD
-    5.1 Calculate total points earned for each team in ArrayList<Team> teams
-    5.2 List the teams and the total points in total points descending order (highest to lowest)
+    5.1 Calculate total points earned for each team in ArrayList<Team> teams - Done.
+    5.2 List the teams and the total points in total points descending order (highest to lowest) - Done.
 
     6.  APPLICATION IS CLOSED AND SAVING OF DATA
     6.1 When application is closed, provide option for user
-        to save changes (competitions, teams)
+        to save changes (competitions, teams) - Done.
     6.2 Save (write) to 2 x external csv files the data from:
-        ArrayList<Competition> competitions
-        ArrayList<Team> teams
-
+        ArrayList<Competition> competitions - Done.
+        ArrayList<Team> teams - Done.
 */
 package gcesports_gui;
 
@@ -65,6 +64,8 @@ public class GCESports_GUI extends javax.swing.JFrame {
     
     private ArrayList<Competition> competitionList;
     private ArrayList<Team> teamList;
+    
+    // These 2 variables are for Top Teams
     private Map<String, Integer> tally = new HashMap<>();
     private List<Team> leaderboard = new ArrayList<>();
     
@@ -98,13 +99,13 @@ public class GCESports_GUI extends javax.swing.JFrame {
         
         comboBoxStatus = true;
     }
+
     
-    /*******************************************************************
-    Method:     resizeTableColumns()
-    Purpose:    sets up customised widths for a JTable
-    Inputs:     void
-    Outputs:    void
-    *******************************************************************/
+    /**
+     *  Sets up customised widths for the competitions JTable.
+     *     
+     * @return 
+     */
     private void resizeTableColumns() {
         // Columns: Date, Location, Competition, Platform, Team, Points
         // (total numeric values must = 1)
@@ -120,18 +121,23 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }
     }
     
-    // put the points map method here somewhere in this below method.
+    /**
+     * Read in competition data from "competitions.csv" - 
+     * add it to competitionList (type:ArrayList).
+     * Loop through the Map (tally) and check for existing key - 
+     * add if not found, update score if found. 
+     *     
+     * @return 
+     */
     private void readCompetitionData() {
         
         try {
            FileReader reader = new FileReader("competitions.csv");
            BufferedReader bufferedReader = new BufferedReader(reader);
            String line;
-           
-           
-           
-           while((line = bufferedReader.readLine()) != null) {
-               if(line.length() > 0) {
+        
+           while ((line = bufferedReader.readLine()) != null) {
+               if (line.length() > 0) {
                    String[] lineArray = line.split(",");
                    String game = lineArray[0];
                    String location = lineArray[1];
@@ -142,30 +148,28 @@ public class GCESports_GUI extends javax.swing.JFrame {
                    Competition comp = new Competition(game, location, date, team, points);
                    competitionList.add(comp);
                    
-                           if (tally.containsKey(team)) {
-                                int currentScore = tally.get(team);
-                                tally.put(team, currentScore + points);
-                            } else {
-                                tally.put(team, points);
-                            }
-                 
+                   if (tally.containsKey(team)) {
+                        int currentScore = tally.get(team);
+                        tally.put(team, currentScore + points);
+                    } else {
+                        tally.put(team, points);
+                    }  
                }   
            }
            reader.close();
-//           System.out.println(finalScores);
-
         
-        
-        for (Map.Entry<String, Integer> entry : tally.entrySet()) {
-            // We turn each Map entry into a "Team" object
-            Team t = new Team(entry.getKey(), entry.getValue());
-            leaderboard.add(t);
-        }
+           // looping through Map for displaying the top 5 teams
+           // put them into a Team object
+           // add them to leaderboard list
+           for (Map.Entry<String, Integer> entry : tally.entrySet()) {
+               // We turn each Map entry into a "Team" object
+               Team team = new Team(entry.getKey(), entry.getValue());
+               leaderboard.add(team);
+           }
 
-        // STEP 3: Use the Collections toolbox to sort the list
-        // It looks at your "compareTo" rule inside the Team class automatically!
-        Collections.sort(leaderboard);
-
+            // STEP 3: Use the Collections to sort the list
+            // It looks at the "compareTo" rule inside the Team class
+           Collections.sort(leaderboard);
         }
         catch (FileNotFoundException fnfe) {
            System.out.println("ERROR: 'competitions.csv' file not found!"); 
@@ -178,6 +182,12 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }      
     }
     
+    /**
+     * Read in the team data from "teams.csv" file.
+     * Add the data into teamList (type:ArrayList).
+     *     
+     * @return 
+     */
     private void readTeamData() {
 
         try {
@@ -185,8 +195,8 @@ public class GCESports_GUI extends javax.swing.JFrame {
            BufferedReader bufferedReader = new BufferedReader(reader);
            String line;
            
-           while((line = bufferedReader.readLine()) != null) {
-               if(line.length() > 0) {
+           while ((line = bufferedReader.readLine()) != null) {
+               if (line.length() > 0) {
                    String[] lineArray = line.split(",");
                    String teamName = lineArray[0];
                    String contactPerson = lineArray[1];
@@ -210,12 +220,11 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }
     }
     
-    /*******************************************************************
-    Method:     displayCompetitions()
-    Purpose:    display ArrayList competitions in JTable
-    Inputs:     void
-    Outputs:    void
-    *******************************************************************/
+    /**
+     * Display the competition information in the table for competition results.
+     *     
+     * @return 
+     */
     private void displayCompetitions() {
         // populate competition data into JTable
         if (competitionList.size() > 0) {
@@ -258,23 +267,23 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }
     }
     
-    /*******************************************************************
-    Method:     displayTeams()
-    Purpose:    display ArrayList teams in the comboBox located in "update existing team" tab
-    Inputs:     void
-    Outputs:    void
-    *******************************************************************/
+    /**
+     * Populate the comboBox with the team names.
+     * Clear everything out first, to ensure it contains only the updated values.
+     *     
+     * @return 
+     */
     private void displayTeams() {
-        if(selectTeam_JComboBox.getItemCount() > 0) {
+        if (selectTeam_JComboBox.getItemCount() > 0) {
             selectTeam_JComboBox.removeAllItems();
         }
         
-        if(updateTeam_JComboBox.getItemCount() > 0) {
+        if (updateTeam_JComboBox.getItemCount() > 0) {
             updateTeam_JComboBox.removeAllItems();
         }     
         
-        if(teamList.size() > 0) {
-            for(int i = 0; i < teamList.size(); i++) {
+        if (teamList.size() > 0) {
+            for (int i = 0; i < teamList.size(); i++) {
                 selectTeam_JComboBox.addItem(teamList.get(i).getTeamName());
                 updateTeam_JComboBox.addItem(teamList.get(i).getTeamName()); 
                 //IO.println(teamList.get(i).getTeamName());
@@ -282,17 +291,16 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }
     }
     
-    /*******************************************************************
-    Method:     displayTeamDetails()
-    Purpose:    display the associated team information in the form fields related to the 
-                team selected from the comboBox
-    Inputs:     void
-    Outputs:    void
-    *******************************************************************/
+    /**
+     * Displays the selected teams contact details.
+     * Textfields are populated based on the index of the comboBox.
+     *     
+     * @return 
+     */
     private void displayTeamDetails() {
         
         int itemIndexSelected = 0;
-        if(comboBoxStatus == true) {
+        if (comboBoxStatus == true) {
             itemIndexSelected = updateTeam_JComboBox.getSelectedIndex();
             if (itemIndexSelected < 0) {
                 itemIndexSelected = 0;
@@ -360,7 +368,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
         uTeamHeading_JLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Gold Coast E-Sports");
+        setTitle("Gold Coast E-Sports Competition Data");
         setBackground(new java.awt.Color(255, 255, 255));
         setPreferredSize(new java.awt.Dimension(800, 800));
         setResizable(false);
@@ -694,22 +702,27 @@ public class GCESports_GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-     
+    /**
+     * Updates the teams comboBox when state changes by calling the method
+     * displayTeamDetails().
+     *     
+     * @param evt the event that occurred
+     * @return
+     */ 
     private void updateTeam_JComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_updateTeam_JComboBoxItemStateChanged
         displayTeamDetails();
     }//GEN-LAST:event_updateTeam_JComboBoxItemStateChanged
 
-    /*******************************************************************
-    Method:     addNewTeam_JButtonActionPerformed()
-    Purpose:    capture the form field values and validate them. If they are correct
-                add them into the teamList
-                team selected from the comboBox
-    Inputs:     void
-    Outputs:    void
-    *******************************************************************/
+    
+    /**
+     * Adds a new team when the "add new team" button is clicked in the GUI.
+     * Runs the validation method to check for errors.
+     * Shows a dialog box to confirm "add new team".
+     *     
+     * @param evt the event that occurred
+     * @return
+     */
     private void addNewTeam_JButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addNewTeam_JButtonActionPerformed
-        // TODO add your handling code here:
-        
         // get form fields
         String addTeam = teamName_JTextField.getText();
         String addPerson = contactPerson_JTextField.getText();
@@ -718,12 +731,12 @@ public class GCESports_GUI extends javax.swing.JFrame {
     
         // validate
         Boolean valid = validateNewTeam(addTeam, addPerson, addPhone, addEmail);
-        if(valid) {
+        if (valid) {
            
             // showDialog
             int yesOrNo = JOptionPane.showConfirmDialog(null, "You are about to enter a new team: " + addTeam, "Save Changes?", JOptionPane.YES_NO_OPTION);
             
-            if(yesOrNo == JOptionPane.YES_OPTION) {
+            if (yesOrNo == JOptionPane.YES_OPTION) {
                 Team team = new Team(addTeam, addPerson, addPhone, addEmail);
                 teamList.add(team);    
                 displayTeams(); 
@@ -731,44 +744,40 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_addNewTeam_JButtonActionPerformed
 
-    /*******************************************************************
-    Method:     validateNewTeam()
-    Purpose:    capture the form field values and validate them. If they are correct
-                add them into the teamList
-                team selected from the comboBox
-    Inputs:     
-     * @param team
-     * @param person
-     * @param phone
-     * @param email
-     * @return 
-    Outputs:    Boolean
-    *******************************************************************/
+    /**
+     * Check the data entered into the form controls for a new team is valid.
+     *     
+     * @param team      Name of the team.
+     * @param person    Team contact person.
+     * @param phone     Contact persons phone number.
+     * @param email     Contact persons email.
+     * @return true if all form fields are valid, false if any field is left blank.
+     */
     public Boolean validateNewTeam(String team, String person, String phone, String email) {
 
         Boolean isValid = true;
         String errorMsg = "Error(s) were detected: \n";
         
         // validate Team
-        if(team.isEmpty()) {
+        if (team.isEmpty()) {
             errorMsg += "Team Name is not valid. Cannot be blank. \n";
             isValid = false;
         }
         
         // validate Contact Person
-        if(person.isEmpty()) {
+        if (person.isEmpty()) {
             errorMsg += "Contact Person is not valid. Cannot be blank. \n";
             isValid = false;
         }
 
         // validate Contact Phone
-        if(phone.isEmpty()) {
+        if (phone.isEmpty()) {
             errorMsg += "Contact Phone is not valid. Cannot be blank. \n";
             isValid = false;
         }        
         
         // validate Contact Email
-        if(email.isEmpty()) {
+        if (email.isEmpty()) {
             errorMsg += "Email address is not valid. Cannot be blank. \n";
             isValid = false;
         }
@@ -779,10 +788,9 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }       
         return isValid;
     }
-    
-    
+      
     /**
-     *  Check the data entered into the form controls for a new competition result is valid.
+     * Check the data entered into the form controls for a new competition result is valid.
      *     
      * @param compGame      Name of the game played.
      * @param compLocation  Location game was played.
@@ -797,42 +805,42 @@ public class GCESports_GUI extends javax.swing.JFrame {
         String errorMsg = "Error(s) were detected: \n";
         
         // validate Team
-        if(compTeam.isEmpty()) {
+        if (compTeam.isEmpty()) {
             errorMsg += "Team Name is not valid. Cannot be blank. \n";
             isValid = false;
         }
         
         // validate Contact Person
-        if(compGame.isEmpty()) {
+        if (compGame.isEmpty()) {
             errorMsg += "Game is not valid. Cannot be blank. \n";
             isValid = false;
         }
 
         // validate Contact Phone
-        if(compLocation.isEmpty()) {
+        if (compLocation.isEmpty()) {
             errorMsg += "Location is not valid. Cannot be blank. \n";
             isValid = false;
         }        
         
         // validate Contact Email
-        if(compDate.isEmpty()) {
+        if (compDate.isEmpty()) {
             errorMsg += "Date is not valid. Cannot be blank. \n";
             isValid = false;
         }
 
-        if(compPoints.isEmpty()) {
+        if (compPoints.isEmpty()) {
             errorMsg += "Points is not valid. Cannot be blank. \n";
             isValid = false;
         }
         else {
             try {
                 int points = Integer.parseInt(compPoints);
-                if(points < 0 || points > 2) {
+                if (points < 0 || points > 2) {
                    errorMsg += "Points is not valid. Must be between 0 and 2";
                    isValid = false;
                 }
             }
-            catch(Exception e) {
+            catch (Exception e) {
                 errorMsg += "Points is not valid. Needs to be a number";
                 isValid = false;
             }
@@ -846,13 +854,12 @@ public class GCESports_GUI extends javax.swing.JFrame {
         return isValid;
     }
     
-    /*******************************************************************
-    Method:     saveTeamData()
-    Purpose:    Save the data in the teamList to the "teams.csv" file.
-                team selected from the comboBox
-    Inputs:     void
-    Outputs:    void
-    *******************************************************************/
+    /**
+     * Save the current team data to external "teams.csv" file.
+     * Notify on error.
+     *     
+     * @return
+     */
     private void saveTeamData() {
         
         // try with resources
@@ -867,7 +874,12 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }
     }
     
-    
+    /**
+     * Save the current competition data to external "competitions.csv" file.
+     * Notify on error. 
+     *     
+     * @return
+     */
     private void saveCompetitionData() {
         // save data out to external 'competitions.csv' 
 
@@ -883,21 +895,36 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }
     }
     
-    
+    /**
+     * On closing the application, prompt user for confirmation to save changes.
+     * If Yes: run saveCompetitionData() and saveTeamData() methods.
+     * If No: Exit the application without saving.
+     *     
+     * @param evt the event that occurred
+     * @return
+     */
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        // TODO add your handling code here:
+
         // write to file here
         // yes or no variable for user to select save / not save
         int yesOrNo = JOptionPane.showConfirmDialog(null, "Do you wish to save changes before cosing?", "Save Changes?", JOptionPane.YES_NO_OPTION);
         
-        if(yesOrNo == JOptionPane.YES_OPTION) {
+        if (yesOrNo == JOptionPane.YES_OPTION) {
             saveCompetitionData();
             saveTeamData();
         }      
         // exit
     }//GEN-LAST:event_formWindowClosing
 
-    
+    /**
+     * When "Add Competition Result" button clicked, gather data from the form fields.
+     * validate the data with validateNewCompetition() and return a boolean;
+     * If true: Show confirmation dialog box to save. If false: Show error dialog box with error(s) listed.
+     * If save: Add data to in competitionList (type:ArrayList), run displayCompetitions method.
+     * 
+     * @param evt the event that occurred
+     * @return
+     */
     private void addresult_JButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addresult_JButtonActionPerformed
         // TODO add your handling code here:
         String compGame = addGame_JTextField.getText();
@@ -907,10 +934,10 @@ public class GCESports_GUI extends javax.swing.JFrame {
         String compPoints = addPoints_JTextField.getText();
         
         Boolean valid = validateNewCompetition(compGame, compLocation, compDate, compTeam, compPoints);
-        if(valid == true) {
+        if (valid == true) {
             int yesOrNo = JOptionPane.showConfirmDialog(null, "You are about to enter a new team result for: " + compTeam, "Save Changes?", JOptionPane.YES_NO_OPTION);
-
-            if(yesOrNo == JOptionPane.YES_OPTION) {
+ 
+            if (yesOrNo == JOptionPane.YES_OPTION) {
                 Competition competition = new Competition(compGame, compLocation, compDate, compTeam, Integer.parseInt(compPoints));
                 competitionList.add(competition);    
                 displayCompetitions(); 
@@ -918,10 +945,17 @@ public class GCESports_GUI extends javax.swing.JFrame {
         }      
     }//GEN-LAST:event_addresult_JButtonActionPerformed
 
+    /**
+     * Display dialog box containing the top 5 teams.
+     * msg variable contains teams. Passed to messageDialog.
+     * 
+     * @param evt the event that occurred
+     * @return
+     */
     private void topTeams_JButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_topTeams_JButtonActionPerformed
         // TODO add your handling code here:
         String msg = displayTopTeams(leaderboard);
-        JOptionPane.showMessageDialog(null, msg, "Teams Leaderboard", JOptionPane.INFORMATION_MESSAGE);   
+        JOptionPane.showMessageDialog(null, msg, "Top Teams Leaderboard", JOptionPane.INFORMATION_MESSAGE);   
     }//GEN-LAST:event_topTeams_JButtonActionPerformed
 
     
@@ -934,12 +968,16 @@ public class GCESports_GUI extends javax.swing.JFrame {
     */
     private String displayTopTeams(List<Team> leaderboard) {
         
-        String topTeams = "Team | Points\n";
-   //     int rank = 1;    
-        for(int count = 0; count < 5; count++) {
-            Team t = leaderboard.get(count);
-           // System.out.println(t.getTeamName() + "\t\t" + t.getTotalPoints());
-           topTeams += t.getTeamName() + " | " + t.getTotalPoints() + "\n";
+        String topTeams = "Team  |  Points\n";  
+        for (int count = 0; count < leaderboard.size(); count++) {
+            if (count < 5) {
+                Team team = leaderboard.get(count);
+                // System.out.println(t.getTeamName() + "\t\t" + t.getTotalPoints());
+                topTeams += team.getTeamName() + "  |  " + team.getTotalPoints() + "\n";               
+            }
+            else {
+                break;
+            }
         }
         return topTeams;
     }
