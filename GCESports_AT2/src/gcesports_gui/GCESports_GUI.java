@@ -968,12 +968,12 @@ public class GCESports_GUI extends javax.swing.JFrame {
     */
     private String displayTopTeams(List<Team> leaderboard) {
         
-        String topTeams = "Team  |  Points\n";  
+        String topTeams = "Points  |  Team\n";  
         for (int count = 0; count < leaderboard.size(); count++) {
             if (count < 5) {
                 Team team = leaderboard.get(count);
                 // System.out.println(t.getTeamName() + "\t\t" + t.getTotalPoints());
-                topTeams += team.getTeamName() + "  |  " + team.getTotalPoints() + "\n";               
+                topTeams += team.getTotalPoints() + "    " + team.getTeamName() + "\n";               
             }
             else {
                 break;
