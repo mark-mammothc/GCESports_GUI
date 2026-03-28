@@ -16,8 +16,6 @@ public class Competition {
        this.competitionPoints = competitionPoints;
    }
    
-   
-   
    // ACCESSORS
    public String getCompetitionDate() {
        return this.competitionDate;
@@ -61,17 +59,15 @@ public class Competition {
        this.competitionPoints = competitionPoints;
    }
    
-   // OVERRIDE
+   // OVERRIDE - THIS WRITES OUT FOR THE EXPORT FUNCTION
    @Override
    public String toString() {
-       String compInfo = "Date: " + competitionDate + "\n";
-              compInfo += "Location: " + competitionLocation + "\n";
-              compInfo += "Game: " + competitionGame + "\n";
-              compInfo += "Team: " + competitionTeam + "\n";
-              compInfo += "Points: " + competitionPoints + "\n";
+       String compInfo = competitionDate + ",";
+              compInfo += competitionLocation + ",";
+              compInfo += competitionGame + ",";
+              compInfo += competitionTeam + ",";
+              compInfo += competitionPoints;
               
         return compInfo;
-   }
-    
-    
+   }  
 }
