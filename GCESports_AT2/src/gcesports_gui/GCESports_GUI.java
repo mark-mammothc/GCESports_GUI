@@ -367,7 +367,7 @@ public class GCESports_GUI extends javax.swing.JFrame {
         uTeamHeading_JLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Gold Coast E-Sports Competition Data");
+        setTitle("Gold Coast E-Sports");
         setBackground(new java.awt.Color(255, 255, 255));
         setPreferredSize(new java.awt.Dimension(800, 800));
         setResizable(false);
