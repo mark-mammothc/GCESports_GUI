@@ -6,3 +6,6 @@ Covers the core aspects of Java:
 - classes / OOP theory
 - Swing
 - NetBeans form designer
+
+- Final code submitted for assessment with a PASS achieved.
+- 
