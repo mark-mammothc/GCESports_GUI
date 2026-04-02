@@ -1,3 +1,13 @@
+/*
+   Filename:    Team.java
+   Purpose:     Provide team information for CGESports GUI AT2 
+   Author:      Mark Walsh
+   Date:        27-Mar-2026
+   Version:     2.0
+   License (if applicable): N/A
+   Notes, Fixes, Updates: Added 2nd constructor, totalPoints instance variable and an additional override for dealing with high scores
+*/
+
 package gcesports_gui;
 
 public class Team implements Comparable<Team> {
@@ -70,9 +80,20 @@ public class Team implements Comparable<Team> {
         return teamInfo;
    }
    
+   /*   After trying to use a Set and a couple of other methods i went back to the idea of a Map.
+        In combination with google searches and some back n forth with Gemini to learn the "WHY" 
+        of how this technique works, i opted to use a Map to hold data from a class obj, making it 
+        easy to hold / call both team + score. The list usage is to take advantage of being able to easily 
+        sort / compare a List in order.
+   
+        I know there are multiple other ways to achieve this. I just wanted to learn a little bit
+        about this technique and also practise problem solving.
+    */
+   
+   
    @Override
     public int compareTo(Team other) {
-        // Compare the other team's score to this one for Descending order
+        // Compare the other team's score to this one
         return Integer.compare(other.totalPoints, this.totalPoints);
     }
 }

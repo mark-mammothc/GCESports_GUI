@@ -1,3 +1,12 @@
+/*
+   Filename:    competition.java
+   Purpose:     Provide competition information for CGESports GUI AT2 
+   Author:      Mark Walsh
+   Date:        27-Mar-2026
+   Version:     1.0
+   License (if applicable): N/A
+   Notes, Fixes, Updates: contains override to format string into a format suitable for saving to "competitions.csv" file.
+*/
 package gcesports_gui;
 
 public class Competition {
@@ -62,9 +71,9 @@ public class Competition {
    // OVERRIDE - THIS WRITES OUT FOR THE EXPORT FUNCTION
    @Override
    public String toString() {
-       String compInfo = competitionDate + ",";
+       String compInfo = competitionGame + ",";
               compInfo += competitionLocation + ",";
-              compInfo += competitionGame + ",";
+              compInfo += competitionDate + ",";
               compInfo += competitionTeam + ",";
               compInfo += competitionPoints;
               
